@@ -24,7 +24,7 @@ body {
 	background-color: red;
 }
 
-.getDistance {
+.getDistance, .moveActor {
 	float: left;
 	margin-left: 20px;
 }
@@ -33,4 +33,12 @@ body {
 	float: left;
 	margin-left: 20px;
 	width: 250px;
+}
+
+.mover {
+	height:5px;
+	width:5px;
+	border-radius: 5px;
+	background-color: blue;
+	position: relative;
 }

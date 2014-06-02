@@ -2,22 +2,18 @@ $( document ).ready(function() {
 
 // vars
 
-    var distance;
     var xPosition;
     var yPosition;
     var coordinates = new Array();
+    var velocity = 0.1; // higher = slower
+    var totalDistance;
 
 // function to get distance between two points
 
 function getDistance(x1,y1,x2,y2) {
 
-	// pythagoras / a2 + b2 = c2
-
-	var distance = (y2-y1)*(y2-y1)+(x2-x1)*(x2-x1);
+	var distance = (y2-y1)*(y2-y1)+(x2-x1)*(x2-x1); // pythagoras:  a2 + b2 = c2
 	var distance = Math.sqrt(distance);
-	console.log("getDistance() var (pre-return) "+distance);	
-
-	printDistance(distance);
 
 	return (distance); // not working???
 	
@@ -85,20 +81,77 @@ $( ".getDistance" ).on( "click", function(e) {
 	var endOfArray = coordinates.length-1;
 	var adjacentToEndOfArray = coordinates.length-2;
 
-	// To-do: tidy this up- why does coordinates[coordinates.length-1].x not work???
 	var ultimateX = coordinates[endOfArray].x;
 	var penultimateX = coordinates[adjacentToEndOfArray].x;
 
 	var ultimateY = coordinates[endOfArray].y;
 	var penultimateY = coordinates[adjacentToEndOfArray].y;
+	
+	var distance = getDistance(penultimateX, penultimateY, ultimateX, ultimateY);
 
-	getDistance(penultimateX, penultimateY, ultimateX, ultimateY);
-
-	// why does this not get the (distance) var returned from the getDistance() func????
-
-	console.log("the returned var = "+distance);
-
+	printDistance(distance);
 });
+
+// function to move a point to a coordinate
+function moveActor(actor, toX, toY, duration) {
+	$(actor).animate({'top': toY, 'left': toX },duration);
+}
+
+$( ".moveActor" ).on( "click", function(e) {
+	// loop over coordinates array and move actor between dots
+	/* coordinates.forEach(function(coordinate) {
+	    moveActor('.mover', coordinate.x, coordinate.y, moveSpeed);
+	}); */
+
+	for (index = 0; index < coordinates.length; ++index) {
+
+		// to-do: this doesn't account for the end of the array when checking distances
+
+	    currentX = coordinates[index].x;
+	    nextX = coordinates[index+1].x;
+		currentY = coordinates[index].y;
+		nextY = coordinates[index+1].y;
+
+	    // get distance to apply duration multiple (shorter distance = lower duration)
+	    var distance = getDistance(currentX,currentY,nextX,nextY);
+
+	    getTotalDistance();
+	    moveActor('.mover', coordinates[index].x, coordinates[index].y, distance/velocity);
+	}
+});
+
+function getTotalDistance() {
+	console.log('running totalDistance!');
+	var totalDistance;
+	for (index = 0; index < coordinates.length; ++index) {
+	    currentX = coordinates[index].x;
+	    nextX = coordinates[index+1].x;
+		currentY = coordinates[index].y;
+		nextY = coordinates[index+1].y;
+	    var distance = getDistance(currentX,currentY,nextX,nextY);
+	    totalDistance =+ distance;
+	}
+	console.log('totalDistance: ' + totalDistance);
+}
+
+
+// smaller distance = shorter duration
+
+// speed = 10
+// distance = 20
+// distance = 100
+
+// time = distance / velocity
+
+
+
+
+
+
+
+
+
+
 
 
 });
