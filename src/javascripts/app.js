@@ -4,7 +4,7 @@ $( document ).ready(function() {
 
     var xPosition;
     var yPosition;
-    var coordinates = new Array();
+    var coordinates = [{x:0,y:0}];
     var velocity = 0.1; // higher = slower
     var totalDistance;
 
@@ -94,6 +94,7 @@ $( ".getDistance" ).on( "click", function(e) {
 
 // function to move a point to a coordinate
 function moveActor(actor, toX, toY, duration) {
+console.log('move',toX,toY,duration);
 	$(actor).animate({'top': toY, 'left': toX },duration);
 }
 
@@ -103,7 +104,7 @@ $( ".moveActor" ).on( "click", function(e) {
 	    moveActor('.mover', coordinate.x, coordinate.y, moveSpeed);
 	}); */
 
-	for (index = 0; index < coordinates.length; ++index) {
+	for (index = 0; index < coordinates.length-1; ++index) {
 
 		// to-do: this doesn't account for the end of the array when checking distances
 
@@ -114,9 +115,10 @@ $( ".moveActor" ).on( "click", function(e) {
 
 	    // get distance to apply duration multiple (shorter distance = lower duration)
 	    var distance = getDistance(currentX,currentY,nextX,nextY);
+	    console.log('distance',distance,distance/velocity,'x,y',currentX,currentY,'next',nextX,nextY);
 
-	    getTotalDistance();
-	    moveActor('.mover', coordinates[index].x, coordinates[index].y, distance/velocity);
+	    //getTotalDistance();
+	    moveActor('.mover', coordinates[index+1].x, coordinates[index+1].y, distance/velocity);
 	}
 });
 
