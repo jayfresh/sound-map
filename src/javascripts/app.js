@@ -94,7 +94,6 @@ $( ".getDistance" ).on( "click", function(e) {
 
 // function to move a point to a coordinate
 function moveActor(actor, toX, toY, duration) {
-console.log('move',toX,toY,duration);
 	$(actor).animate({'top': toY, 'left': toX },duration);
 }
 
@@ -115,7 +114,6 @@ $( ".moveActor" ).on( "click", function(e) {
 
 	    // get distance to apply duration multiple (shorter distance = lower duration)
 	    var distance = getDistance(currentX,currentY,nextX,nextY);
-	    console.log('distance',distance,distance/velocity,'x,y',currentX,currentY,'next',nextX,nextY);
 
 	    //getTotalDistance();
 	    moveActor('.mover', coordinates[index+1].x, coordinates[index+1].y, distance/velocity);
