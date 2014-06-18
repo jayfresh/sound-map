@@ -12,6 +12,8 @@ $( document ).ready(function() {
     var soundY = 100;
 
     var maxAudibleDistance = 100;
+    
+    var volumeNode;
 
 	// function to get distance between two points
 
@@ -146,8 +148,7 @@ $( document ).ready(function() {
 		volumeLevel = 1 - (distance / maxAudibleDistance);
 		console.log ('volume: ',volumeLevel,' distance: ',distance)
 
-		// to do: get this working - 'volumeNode is not in scope' at this point :(
-		// volumeNode.gain.value = volumeLevel;
+		volumeNode.gain.value = volumeLevel;
 	}
 
 
