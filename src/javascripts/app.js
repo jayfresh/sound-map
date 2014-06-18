@@ -146,7 +146,9 @@ $( document ).ready(function() {
 
 		// equation courtesy of @jayfresh: y = 1 - x/100 
 		volumeLevel = 1 - (distance / maxAudibleDistance);
-		console.log ('volume: ',volumeLevel,' distance: ',distance)
+		// console.log ('volume: ',volumeLevel,' distance: ',distance);
+
+		// console.log('running setVolume');
 
 		volumeNode.gain.value = volumeLevel;
 	}
