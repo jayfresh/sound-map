@@ -9,9 +9,6 @@ $(document).ready(function() {
   var coordinates = [{x:0,y:0}];
   var velocity = 0.05; // higher = faster
   var totalDistance;
-  
-  var soundX = 100;
-  var soundY = 100;
 
   var soundSources = [{x:200,y:200,url:'images/sound.mp3'},{x:300,y:300,url:'images/sound2.mp3'}];
 
@@ -50,11 +47,11 @@ $(document).ready(function() {
 
 	// create positions on soundMap
 
-	 $(".soundMap").on("click", function(e) {
+  $(".soundMap").on("click", function(e) {
 	 	getClickPosition(e);
 	 	plotDot(xPosition,yPosition,"dot");
 	 	addPositionToArray(xPosition,yPosition);
-	 });
+  });
 
 	// Add dot to sound map
 
@@ -129,34 +126,40 @@ $(document).ready(function() {
 			progress: function() { // NB 'step' seems to do the same as progress ??
 
 				// get position of actor
-				var position = getPosition(this);
+				var position = getPosition(this),
+          distance,
+				  soundSource,
+				  index; // use a counter that's inside this scope so it doesn't mess with the global counter
 
-				// get distance from actor to another position 
-				var distance = getDistance(soundX,soundY,position.x,position.y);
+				// get distance from actor to position of each sound
+				for(index = 0; index<soundSources.length; index++) {
+  				soundSource = soundSources[index];
+  				distance = getDistance(soundSource.x,soundSource.y,position.x,position.y);
 
-				// set distance maximum 
-				if (distance > maxAudibleDistance) {
-					distance = maxAudibleDistance;
-				}
-
-				// control volume with distance
-				setVolume(distance);
+    			// set distance maximum 
+  				if (distance > maxAudibleDistance) {
+  					distance = maxAudibleDistance;
+  				}
+  
+  				// control volume with distance
+  				setVolume(distance, index);
+        }
 			}
 		});
 	}
 
-	// Set Volume using distance
-	function setVolume(distance) {
-		// equation courtesy of @jayfresh: y = 1 - x/100 
+	// Set Volume using distance for a sound source
+	function setVolume(distance, sourceIndex) {
+		// equation courtesy of @jayfresh: y = 1 - x/100
 		volumeLevel = 1 - (distance / maxAudibleDistance);
-		volumeNode.gain.value = volumeLevel;
+		soundSources[sourceIndex].gainNode.gain.value = volumeLevel;
 	}
 
 
 
 	$(".moveActor").on("click", function(e) {
 		// loop over coordinates array and move actor between dots
-
+    // coordinates starts with an entry at 0,0
 		for (index = 0; index < coordinates.length-1; index++) {
 	    currentX = coordinates[index].x;
 	    nextX = coordinates[index+1].x;
@@ -165,10 +168,8 @@ $(document).ready(function() {
 
 	    // get distance to apply duration multiple (shorter distance = lower duration)
 	    var distance = getDistance(currentX,currentY,nextX,nextY);
-
 	    var time = distance/velocity;
-
-	    moveActor('.mover', coordinates[index+1].x, coordinates[index+1].y, time);
+	    moveActor('.mover', nextX, nextY, time);
 		}
 	});
 
@@ -196,38 +197,39 @@ $(document).ready(function() {
     bufferLoader.load();
   }
 
-  // Declared these vars so the volume controls don't throw 'undefined' errors
-  var gainNode,
-  	gain,
-  	value;
-
-
   function finishedLoading(bufferList) {
-		for (index = 0; index < soundSources.length; ++index) {
+    console.log('finishedLoading');
+		for (index = 0; index < soundSources.length; index++) {
+        
 			var source = context.createBufferSource();
 			source.buffer = bufferList[index];
 
-			// connect gain node - This doesn't appear to work 
-			// want to have separately controlable gain nodes for each sound
+			// connect gain node
 			var gainNode = context.createGain();
 			source.connect(gainNode);
 			gainNode.connect(context.destination);
 
-			source.connect(context.destination);
+			//source.connect(context.destination); // JRL: commented this out so the gainNode was able to affect the sound
 			source.start(0);
+			
+      // save the source and gainNode onto the sourceSource
+      // to have separately controlable gain nodes for each sound
+			soundSources[index].source = source;
+			soundSources[index].gainNode = gainNode;
 
-			gainNode.gain.value = 0; // this doesn't have expected effect
+      // start sounds at volume 0
+			gainNode.gain.value = 0;
 		}
   }
 
-  // TEST: set volumes- These don't work
+  // TEST: set volumes to 0
 
   document.querySelector('.setVolumeOne').addEventListener('click', function() {
-  	gainNode.gain.value = 0;
+    soundSources[0].gainNode.gain.value = 0;
   });
 
   document.querySelector('.setVolumeTwo').addEventListener('click', function() {
-  	gainNode.gain.value = 0;
+  	soundSources[1].gainNode.gain.value = 0;
   });
 
 });
