@@ -212,6 +212,7 @@ $(document).ready(function() {
 
   function finishedLoading(bufferList) {
     console.log('finishedLoading');
+    $(".moveActor").html('Go!');
 		for (index = 0; index < soundSources.length; index++) {
         
 			var source = context.createBufferSource();
