@@ -213,14 +213,16 @@ $( document ).ready(function() {
 			source.buffer = bufferList[index];
 
 
-			// connect gain node - This doesn't appear to work
+			// connect gain node - This doesn't appear to work 
+			// want to have separately controlable gain nodes for each sound
 			var gainNode = context.createGain();
 			source.connect(gainNode);
 			gainNode.connect(context.destination);
 
 			source.connect(context.destination);
 			source.start(0);
-			gainNode.gain.value = 0;
+
+			gainNode.gain.value = 0; // this doesn't have expected effect
 		}
     }
 
