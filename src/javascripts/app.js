@@ -1,34 +1,31 @@
 // Sound Map App
 
-$( document ).ready(function() {
+$(document).ready(function() {
 
 	// vars
 
-    var xPosition;
-    var yPosition;
-    var coordinates = [{x:0,y:0}];
-    var velocity = 0.05; // higher = faster
-    var totalDistance;
-    
-    var soundX = 100;
-    var soundY = 100;
+  var xPosition;
+  var yPosition;
+  var coordinates = [{x:0,y:0}];
+  var velocity = 0.05; // higher = faster
+  var totalDistance;
+  
+  var soundX = 100;
+  var soundY = 100;
 
-    var soundSources = [{x:200,y:200,url:'images/sound.mp3'},{x:300,y:300,url:'images/sound2.mp3'}];
+  var soundSources = [{x:200,y:200,url:'images/sound.mp3'},{x:300,y:300,url:'images/sound2.mp3'}];
 
-    var maxAudibleDistance = 100;
-    
-    var volumeNode;
-
+  var maxAudibleDistance = 100;
+  
+  var volumeNode;
+  var index;
 
 	// function to get distance between two points
 
-		function getDistance(x1,y1,x2,y2) {
-
+	function getDistance(x1,y1,x2,y2) {
 		var distance = (y2-y1)*(y2-y1)+(x2-x1)*(x2-x1); // pythagoras:  a2 + b2 = c2
 		var distance = Math.sqrt(distance);
-
 		return (distance);
-		
 	};
 
 	// get Click Position
@@ -41,8 +38,8 @@ $( document ).ready(function() {
 	}
 	 
 	function getPosition(element) {
-	     	var xPosition = 0;
-	    	var yPosition = 0;
+     	var xPosition = 0;
+    	var yPosition = 0;
 	    while (element) {
 	        xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
 	        yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
@@ -53,7 +50,7 @@ $( document ).ready(function() {
 
 	// create positions on soundMap
 
-	 $( ".soundMap" ).on( "click", function(e) {
+	 $(".soundMap").on("click", function(e) {
 	 	getClickPosition(e);
 	 	plotDot(xPosition,yPosition,"dot");
 	 	addPositionToArray(xPosition,yPosition);
@@ -62,23 +59,24 @@ $( document ).ready(function() {
 	// Add dot to sound map
 
 	function plotDot(x,y) {
-		$('.soundMap').append($('<div class="dot"></div>')
-			.css({top: y, left: x, position: 'absolute'})
-	    )
+		$('.soundMap').append(
+		  $('<div class="dot"></div>')
+			  .css({top: y, left: x, position: 'absolute'})
+    );
 	}
-
 	
 	// Add Soundsource dots to map
 
 	function addSoundSource(x,y) {
-		$('.soundMap').append($('<div class="sound"></div>')
-			.css({top: y, left: x, position: 'absolute'})
-	    )
+		$('.soundMap').append(
+		  $('<div class="sound"></div>')
+			  .css({top: y, left: x, position: 'absolute'})
+    );
 	}
 
 	// Loop through soundsource array and put dots on map
 
-	for (index = 0; index < soundSources.length; ++index) {
+	for (index = 0; index < soundSources.length; index++) {
 		addSoundSource(soundSources[index].x,soundSources[index].y);
 	}
 
@@ -103,7 +101,7 @@ $( document ).ready(function() {
 
 	// run getDistance onClick
 
-	$( ".getDistance" ).on( "click", function(e) {
+	$(".getDistance").on("click", function(e) {
 
 		// set up vars to deal with getting the last 2 objects in the array
 		var endOfArray = coordinates.length-1;
@@ -156,62 +154,58 @@ $( document ).ready(function() {
 
 
 
-	$( ".moveActor" ).on( "click", function(e) {
+	$(".moveActor").on("click", function(e) {
 		// loop over coordinates array and move actor between dots
 
-		for (index = 0; index < coordinates.length-1; ++index) {
-
-		    currentX = coordinates[index].x;
-		    nextX = coordinates[index+1].x;
+		for (index = 0; index < coordinates.length-1; index++) {
+	    currentX = coordinates[index].x;
+	    nextX = coordinates[index+1].x;
 			currentY = coordinates[index].y;
 			nextY = coordinates[index+1].y;
 
-		    // get distance to apply duration multiple (shorter distance = lower duration)
-		    var distance = getDistance(currentX,currentY,nextX,nextY);
+	    // get distance to apply duration multiple (shorter distance = lower duration)
+	    var distance = getDistance(currentX,currentY,nextX,nextY);
 
-		    var time = distance/velocity;
+	    var time = distance/velocity;
 
-		    moveActor('.mover', coordinates[index+1].x, coordinates[index+1].y, time);
-		    
+	    moveActor('.mover', coordinates[index+1].x, coordinates[index+1].y, time);
 		}
 	});
 
-    // Web Audio API set up using buffer-loader.js )
+  // Web Audio API set up using buffer-loader.js )
 	// code from http://www.html5rocks.com/en/tutorials/webaudio/intro/
 
-    window.onload = init;
-    var context;
-    var bufferLoader;
+  window.onload = init;
+  var context;
+  var bufferLoader;
 
-    function init() {
-      // Fix up prefixing
-      window.AudioContext = window.AudioContext || window.webkitAudioContext;
-      context = new AudioContext();
+  function init() {
+    // Fix up prefixing
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    context = new AudioContext();
 
-      bufferLoader = new BufferLoader(
-        context,
-        [
-          soundSources[0].url, // Would like this to be neater (eg. use a 'for' loop over soundSources object)
-          soundSources[1].url,
-        ],
-        finishedLoading
-        );
+    bufferLoader = new BufferLoader(
+      context,
+      [
+        soundSources[0].url, // Would like this to be neater (eg. use a 'for' loop over soundSources object)
+        soundSources[1].url,
+      ],
+      finishedLoading
+    );
 
-      bufferLoader.load();
-    }
+    bufferLoader.load();
+  }
+
+  // Declared these vars so the volume controls don't throw 'undefined' errors
+  var gainNode,
+  	gain,
+  	value;
 
 
-    // Declared these vars so the volume controls don't throw 'undefined' errors
-    var gainNode,
-    	gain,
-    	value;
-
-
-    function finishedLoading(bufferList) {
+  function finishedLoading(bufferList) {
 		for (index = 0; index < soundSources.length; ++index) {
 			var source = context.createBufferSource();
 			source.buffer = bufferList[index];
-
 
 			// connect gain node - This doesn't appear to work 
 			// want to have separately controlable gain nodes for each sound
@@ -224,19 +218,17 @@ $( document ).ready(function() {
 
 			gainNode.gain.value = 0; // this doesn't have expected effect
 		}
-    }
+  }
 
-    // TEST: set volumes- These don't work
+  // TEST: set volumes- These don't work
 
-    document.querySelector('.setVolumeOne').addEventListener('click', function() {
-    	gainNode.gain.value = 0;
-    });
+  document.querySelector('.setVolumeOne').addEventListener('click', function() {
+  	gainNode.gain.value = 0;
+  });
 
-    document.querySelector('.setVolumeTwo').addEventListener('click', function() {
-    	gainNode.gain.value = 0;
-    });
-
-
+  document.querySelector('.setVolumeTwo').addEventListener('click', function() {
+  	gainNode.gain.value = 0;
+  });
 
 });
 
