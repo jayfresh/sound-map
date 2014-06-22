@@ -69,6 +69,19 @@ $(document).ready(function() {
 		  $('<div class="sound"></div>')
 			  .css({top: y, left: x, position: 'absolute'})
     );
+    var svg = document.getElementsByTagName('svg')[0],
+      circle;
+    if(!svg) {
+      var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.width = 400;
+      svg.height = 400;
+      document.getElementsByClassName('soundMap')[0].appendChild(svg);
+    }
+    circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", maxAudibleDistance);
+    svg.appendChild(circle);
 	}
 
 	// Loop through soundsource array and put dots on map
