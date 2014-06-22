@@ -51,6 +51,14 @@ body {
 	position: relative;
 }
 
+svg {
+	height: 399px;
+	width: 400px;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 circle {
   fill: #EDB6AF;
   fill-opacity: 0.6;
