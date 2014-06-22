@@ -140,9 +140,9 @@ $(document).ready(function() {
 
 				// get position of actor
 				var position = getPosition(this),
-					distance,
-					soundSource,
-					index; // use a counter that's inside this scope so it doesn't mess with the global counter
+          distance,
+				  soundSource,
+				  index; // use a counter that's inside this scope so it doesn't mess with the global counter
 
 				// get distance from actor to position of each sound
 				for(index = 0; index<soundSources.length; index++) {
@@ -156,7 +156,7 @@ $(document).ready(function() {
   
   				// control volume with distance
   				setVolume(distance, index);
-        		}
+        }
 			}
 		});
 	}
@@ -186,34 +186,34 @@ $(document).ready(function() {
 		}
 	});
 
-	// Web Audio API set up using buffer-loader.js )
+  // Web Audio API set up using buffer-loader.js )
 	// code from http://www.html5rocks.com/en/tutorials/webaudio/intro/
 
-	window.onload = init;
-	var context;
-	var bufferLoader;
+  window.onload = init;
+  var context;
+  var bufferLoader;
 
-	function init() {
+  function init() {
     // Fix up prefixing
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     context = new AudioContext();
 
     bufferLoader = new BufferLoader(
-    	context,
-    	[
+      context,
+      [
         soundSources[0].url, // Would like this to be neater (eg. use a 'for' loop over soundSources object)
         soundSources[1].url,
-        ],
-        finishedLoading
-        );
+      ],
+      finishedLoading
+    );
 
-    	bufferLoader.load();
-	}
+    bufferLoader.load();
+  }
 
-	function finishedLoading(bufferList) {
-		console.log('finishedLoading');
+  function finishedLoading(bufferList) {
+    console.log('finishedLoading');
 		for (index = 0; index < soundSources.length; index++) {
-
+        
 			var source = context.createBufferSource();
 			source.buffer = bufferList[index];
 
@@ -224,28 +224,42 @@ $(document).ready(function() {
 
 			//source.connect(context.destination); // JRL: commented this out so the gainNode was able to affect the sound
 			source.start(0);
-				
-			// save the source and gainNode onto the sourceSource
-			// to have separately controlable gain nodes for each sound
+			
+      // save the source and gainNode onto the sourceSource
+      // to have separately controlable gain nodes for each sound
 			soundSources[index].source = source;
 			soundSources[index].gainNode = gainNode;
 
-			// start sounds at volume 0
+      // start sounds at volume 0
 			gainNode.gain.value = 0;
-	  	}
-	}
+		}
+  }
 
   // TEST: set volumes to 0
 
-  	document.querySelector('.setVolumeOne').addEventListener('click', function() {
-		soundSources[0].gainNode.gain.value = 0;
-  	});
+  document.querySelector('.setVolumeOne').addEventListener('click', function() {
+    soundSources[0].gainNode.gain.value = 0;
+  });
 
-  	document.querySelector('.setVolumeTwo').addEventListener('click', function() {
-		soundSources[1].gainNode.gain.value = 0;
-  	});
+  document.querySelector('.setVolumeTwo').addEventListener('click', function() {
+  	soundSources[1].gainNode.gain.value = 0;
+  });
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	// Web Audio API handling - commented as using buffer-loader class above
 
