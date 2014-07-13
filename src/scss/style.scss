@@ -20,8 +20,15 @@ body {
 .dot {
 	height:5px;
 	width:5px;
-	border-radius: 5px;
+	border-radius: 15px;
 	background-color: red;
+	&:hover {
+		cursor: move;
+		height: 15px;
+		width: 15px;
+		margin-top: -3px;
+		margin-left: -3px;
+	}
 }
 
 .sound {

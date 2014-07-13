@@ -4,9 +4,9 @@ $(document).ready(function() {
 
 	// vars
 
-  var xPosition;
-  var yPosition;
-  var coordinates = [{x:0,y:0}];
+	var xPosition;
+	var yPosition;
+	var coordinates = [{x:0,y:0}];
   var velocity = 0.05; // higher = faster
   var totalDistance;
 
@@ -28,60 +28,60 @@ $(document).ready(function() {
 	// get Click Position
 
 	function getClickPosition(e) {
-	    var parentPosition = getPosition(e.currentTarget);
-	    xPosition = e.clientX - parentPosition.x;
-	    yPosition = e.clientY - parentPosition.y;
-	    return(xPosition,yPosition);
+		var parentPosition = getPosition(e.currentTarget);
+		xPosition = e.clientX - parentPosition.x;
+		yPosition = e.clientY - parentPosition.y;
+		return(xPosition,yPosition);
 	}
-	 
+
 	function getPosition(element) {
-     	var xPosition = 0;
-    	var yPosition = 0;
-	    while (element) {
-	        xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-	        yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-	        element = element.offsetParent;
-	    }
-	    return { x: xPosition, y: yPosition };
+		var xPosition = 0;
+		var yPosition = 0;
+		while (element) {
+			xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+			yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+			element = element.offsetParent;
+		}
+		return { x: xPosition, y: yPosition };
 	}
 
 	// create positions on soundMap
 
-  $(".soundMap").on("click", function(e) {
-	 	getClickPosition(e);
-	 	plotDot(xPosition,yPosition,"dot");
-	 	addPositionToArray(xPosition,yPosition);
-  });
+	$(".soundMap").on("click", function(e) {
+		getClickPosition(e);
+		plotDot(xPosition,yPosition,"dot");
+		addPositionToArray(xPosition,yPosition);
+	});
 
 	// Add dot to sound map
 
 	function plotDot(x,y) {
 		$('.soundMap').append(
-		  $('<div class="dot"></div>')
-			  .css({top: y, left: x, position: 'absolute'})
-    );
+			$('<div class="dot" draggable="true"></div>')
+			.css({top: y, left: x, position: 'absolute'})
+			);
 	}
 	
 	// Add Soundsource dots to map
 
 	function addSoundSource(x,y) {
 		$('.soundMap').append(
-		  $('<div class="sound"></div>')
-			  .css({top: y, left: x, position: 'absolute'})
-    );
-    var svg = document.getElementsByTagName('svg')[0],
-      circle;
-    if(!svg) {
-      var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.width = 400;
-      svg.height = 400;
-      document.getElementsByClassName('soundMap')[0].appendChild(svg);
-    }
-    circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circle.setAttribute("cx", x);
-    circle.setAttribute("cy", y);
-    circle.setAttribute("r", maxAudibleDistance);
-    svg.appendChild(circle);
+			$('<div class="sound"></div>')
+			.css({top: y, left: x, position: 'absolute'})
+			);
+		var svg = document.getElementsByTagName('svg')[0],
+		circle;
+		if(!svg) {
+			var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			svg.width = 400;
+			svg.height = 400;
+			document.getElementsByClassName('soundMap')[0].appendChild(svg);
+		}
+		circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+		circle.setAttribute("cx", x);
+		circle.setAttribute("cy", y);
+		circle.setAttribute("r", maxAudibleDistance);
+		svg.appendChild(circle);
 	}
 
 	// Loop through soundsource array and put dots on map
@@ -140,25 +140,25 @@ $(document).ready(function() {
 
 				// get position of actor
 				var position = getPosition(this),
-          distance,
-				  soundSource,
+				distance,
+				soundSource,
 				  index; // use a counter that's inside this scope so it doesn't mess with the global counter
 
 				// get distance from actor to position of each sound
 				for(index = 0; index<soundSources.length; index++) {
-  				soundSource = soundSources[index];
-  				distance = getDistance(soundSource.x,soundSource.y,position.x,position.y);
+					soundSource = soundSources[index];
+					distance = getDistance(soundSource.x,soundSource.y,position.x,position.y);
 
     			// set distance maximum 
-  				if (distance > maxAudibleDistance) {
-  					distance = maxAudibleDistance;
-  				}
-  
+    			if (distance > maxAudibleDistance) {
+    				distance = maxAudibleDistance;
+    			}
+
   				// control volume with distance
   				setVolume(distance, index);
-        }
-			}
-		});
+  			}
+  		}
+  	});
 	}
 
 	// Set Volume using distance for a sound source
@@ -173,50 +173,50 @@ $(document).ready(function() {
 	$(".moveActor").on("click", function(e) {
 		// loop over coordinates array and move actor between dots
     // coordinates starts with an entry at 0,0
-		for (index = 0; index < coordinates.length-1; index++) {
-	    currentX = coordinates[index].x;
-	    nextX = coordinates[index+1].x;
-			currentY = coordinates[index].y;
-			nextY = coordinates[index+1].y;
+    for (index = 0; index < coordinates.length-1; index++) {
+    	currentX = coordinates[index].x;
+    	nextX = coordinates[index+1].x;
+    	currentY = coordinates[index].y;
+    	nextY = coordinates[index+1].y;
 
 	    // get distance to apply duration multiple (shorter distance = lower duration)
 	    var distance = getDistance(currentX,currentY,nextX,nextY);
 	    var time = distance/velocity;
 	    moveActor('.mover', nextX, nextY, time);
-		}
-	});
+	}
+});
 
   // Web Audio API set up using buffer-loader.js )
 	// code from http://www.html5rocks.com/en/tutorials/webaudio/intro/
 
-  window.onload = init;
-  var context;
-  var bufferLoader;
+	window.onload = init;
+	var context;
+	var bufferLoader;
 
-  function init() {
+	function init() {
     // Fix up prefixing
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     context = new AudioContext();
 
     bufferLoader = new BufferLoader(
-      context,
-      [
+    	context,
+    	[
         soundSources[0].url, // Would like this to be neater (eg. use a 'for' loop over soundSources object)
         soundSources[1].url,
-      ],
-      finishedLoading
-    );
+        ],
+        finishedLoading
+        );
 
     bufferLoader.load();
-  }
+}
 
-  function finishedLoading(bufferList) {
-    console.log('finishedLoading');
-    $(".moveActor").html('Go!');
-		for (index = 0; index < soundSources.length; index++) {
-        
-			var source = context.createBufferSource();
-			source.buffer = bufferList[index];
+function finishedLoading(bufferList) {
+	console.log('finishedLoading');
+	$(".moveActor").html('Go!');
+	for (index = 0; index < soundSources.length; index++) {
+
+		var source = context.createBufferSource();
+		source.buffer = bufferList[index];
 
 			// connect gain node
 			var gainNode = context.createGain();
@@ -226,27 +226,103 @@ $(document).ready(function() {
 			//source.connect(context.destination); // JRL: commented this out so the gainNode was able to affect the sound
 			source.start(0);
 			
-      // save the source and gainNode onto the sourceSource
-      // to have separately controlable gain nodes for each sound
-			soundSources[index].source = source;
-			soundSources[index].gainNode = gainNode;
+	      // save the source and gainNode onto the sourceSource
+	      // to have separately controlable gain nodes for each sound
+	      soundSources[index].source = source;
+	      soundSources[index].gainNode = gainNode;
 
       // start sounds at volume 0
-			gainNode.gain.value = 0;
-		}
+      gainNode.gain.value = 0;
   }
+}
 
   // TEST: set volumes to 0
 
   document.querySelector('.setVolumeOne').addEventListener('click', function() {
-    soundSources[0].gainNode.gain.value = 0;
+  	soundSources[0].gainNode.gain.value = 0;
   });
 
   document.querySelector('.setVolumeTwo').addEventListener('click', function() {
   	soundSources[1].gainNode.gain.value = 0;
   });
 
+  // drag handling: from http://jsfiddle.net/HtubL/57/ (doesn't work)
+	
+	var container  = $('.soundMap');   // The element dots can be dragged within
+	var draggables = $('.dot'); // The dots
+
+
+	// Loop through and pass to our super function
+	for(var i = 0, l = draggables.length; i < l; ++i)
+	    makeDraggable(draggables[i], container); 
+
+
+	function makeDraggable(draggable, container){
+	  // In case you don't want to have a container
+	  var container = container || window;
+	  // So we know what to do on mouseup:
+	  // At this point we're not sure the user wants to drag
+	  var dragging  = false;
+
+	      // The movement listener and position modifier
+	      function dragHandler(moveEvent){
+	      	moveEvent.preventDefault();
+
+	      	dragging        = true;
+
+	          // Ascertain where the mouse is
+	          var coordinates = [
+	          moveEvent.clientX,
+	          moveEvent.clientY
+	          ];
+
+	          // Style properties we need to apply to the element 
+	          var styleValues = {
+	          	position : 'absolute',
+	          	left     : coordinates[0] + 'px',
+	          	top      : coordinates[1] + 'px'
+	          };
+
+	          // Apply said styles
+	          for(property in styleValues){
+	          	if(styleValues.hasOwnProperty(property)){
+	          		draggable.style[property] = styleValues[property];
+	          	}
+	          }
+	      }
+
+	      function dropHandler(upEvent){
+	      // Only interfere if we've had a drag event
+	      if(dragging === true){
+	          // We don't want the button click event to fire!
+	          upEvent.preventDefault();
+
+	          // We don't want to listen for drag and drop until this is clicked again
+	          container.removeEventListener('mousemove', dragHandler, false);
+	          draggable.removeEventListener('mouseup',   dropHandler, false);
+
+	          dragging = false;
+	      }
+	  }
+
+	  // Where all the fun happens
+	  draggable.addEventListener('mousedown', function dragListener(downEvent){
+	  	console.log("dragging!");
+	  	downEvent.preventDefault();
+
+	      // The drag event
+	      container.addEventListener('mousemove', dragHandler, false);
+
+	      // The end of drag, if dragging occurred
+	      draggable.addEventListener('mouseup',   dropHandler, false);
+	  }, false);
+	}
+
+
+
 });
+
+
 
 
 
