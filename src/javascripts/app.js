@@ -1,4 +1,5 @@
 // Sound Map App
+var soundSources = [{x:200,y:200,url:'images/sound.mp3'},{x:300,y:300,url:'images/sound2.mp3'}];
 
 $(document).ready(function() {
 
@@ -8,13 +9,8 @@ $(document).ready(function() {
 	var coordinates = [{x:0,y:0}];
   var velocity = 0.05; // higher = faster
   var totalDistance;
-
-  var soundSources = [{x:200,y:200,url:'images/sound.mp3'},{x:300,y:300,url:'images/sound2.mp3'}];
-
   var maxAudibleDistance = 100;
-  
   var volumeNode;
-  var index;
 
 	// function to get distance between two points
 
@@ -92,7 +88,6 @@ $(document).ready(function() {
 	for (index = 0; index < soundSources.length; index++) {
 		addSoundSource(soundSources[index].x,soundSources[index].y);
 	}
-
 
 	// put click positions into array
 
@@ -181,8 +176,6 @@ $(document).ready(function() {
 		soundSources[sourceIndex].gainNode.gain.value = volumeLevel;
 	}
 
-
-
 	$(".moveActor").on("click", function(e) {
 		$(this).attr('disabled', 'disabled');
 		// loop over coordinates array and move actor between dots
@@ -197,31 +190,32 @@ $(document).ready(function() {
 	    var distance = getDistance(currentX,currentY,nextX,nextY);
 	    var time = distance/velocity;
 	    moveActor('.mover', nextX, nextY, time);
-	}
+		}
+	});
 });
 
-  // Web Audio API set up using buffer-loader.js )
-	// code from http://www.html5rocks.com/en/tutorials/webaudio/intro/
+// Web Audio API set up using buffer-loader.js )
+// code from http://www.html5rocks.com/en/tutorials/webaudio/intro/
 
-	window.onload = init;
-	var context;
-	var bufferLoader;
+window.onload = init;
+var context;
+var bufferLoader;
 
-	function init() {
-    // Fix up prefixing
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    context = new AudioContext();
+function init() {
+  // Fix up prefixing
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  context = new AudioContext();
 
-    bufferLoader = new BufferLoader(
-    	context,
-    	[
-        soundSources[0].url, // Would like this to be neater (eg. use a 'for' loop over soundSources object)
-        soundSources[1].url,
-        ],
-        finishedLoading
-        );
+  bufferLoader = new BufferLoader(
+  	context,
+  	[
+      soundSources[0].url, // Would like this to be neater (eg. use a 'for' loop over soundSources object)
+      soundSources[1].url,
+      ],
+      finishedLoading
+      );
 
-    bufferLoader.load();
+  bufferLoader.load();
 }
 
 function finishedLoading(bufferList) {
@@ -232,107 +226,117 @@ function finishedLoading(bufferList) {
 		var source = context.createBufferSource();
 		source.buffer = bufferList[index];
 
-			// connect gain node between source and destination
-			var gainNode = context.createGain();
-			source.connect(gainNode);
-			gainNode.connect(context.destination);
-			// set initial volume
-			gainNode.gain.value = 0;
-			source.start();
-			
-	      // save the source and gainNode onto the sourceSource
-	      // to have separately controlable gain nodes for each sound
-	      soundSources[index].source = source;
-	      soundSources[index].gainNode = gainNode;
+		// connect gain node between source and destination
+		var gainNode = context.createGain();
+		source.connect(gainNode);
+		gainNode.connect(context.destination);
+		// set initial volume
+		gainNode.gain.value = 0;
+		source.start();
 
+    // save the source and gainNode onto the sourceSource
+    // to have separately controlable gain nodes for each sound
+    soundSources[index].source = source;
+    soundSources[index].gainNode = gainNode;
   }
 }
 
-  // TEST: set volumes to 0
+// load map behaviour, called by callback in API script tag
+function initMap () {
+	// The location of the forum at Pompeii
+	var pompeii = {lat: 40.7494616, lng: 14.4846853};
+	// The map, centered at Pompeii
+	var map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 19,
+		center: pompeii,
+		mapTypeId: 'hybrid',
+		disableDefaultUI: true
+	});
+	// The marker, positioned at Uluru
+	// var marker = new google.maps.Marker({position: uluru, map: map});
+}
 
-  document.querySelector('.setVolumeOne').addEventListener('click', function() {
-  	soundSources[0].gainNode.gain.value = 0;
-  });
+// TEST: set volumes to 0
 
-  document.querySelector('.setVolumeTwo').addEventListener('click', function() {
-  	soundSources[1].gainNode.gain.value = 0;
-  });
-
-  // drag handling: from http://jsfiddle.net/HtubL/57/ (doesn't work)
-	
-	var container  = $('.soundMap');   // The element dots can be dragged within
-	var draggables = $('.dot'); // The dots
-
-
-	// Loop through and pass to our super function
-	for(var i = 0, l = draggables.length; i < l; ++i)
-	    makeDraggable(draggables[i], container); 
-
-
-	function makeDraggable(draggable, container){
-	  // In case you don't want to have a container
-	  var container = container || window;
-	  // So we know what to do on mouseup:
-	  // At this point we're not sure the user wants to drag
-	  var dragging  = false;
-
-	      // The movement listener and position modifier
-	      function dragHandler(moveEvent){
-	      	moveEvent.preventDefault();
-
-	      	dragging        = true;
-
-	          // Ascertain where the mouse is
-	          var coordinates = [
-	          moveEvent.clientX,
-	          moveEvent.clientY
-	          ];
-
-	          // Style properties we need to apply to the element 
-	          var styleValues = {
-	          	position : 'absolute',
-	          	left     : coordinates[0] + 'px',
-	          	top      : coordinates[1] + 'px'
-	          };
-
-	          // Apply said styles
-	          for(property in styleValues){
-	          	if(styleValues.hasOwnProperty(property)){
-	          		draggable.style[property] = styleValues[property];
-	          	}
-	          }
-	      }
-
-	      function dropHandler(upEvent){
-	      // Only interfere if we've had a drag event
-	      if(dragging === true){
-	          // We don't want the button click event to fire!
-	          upEvent.preventDefault();
-
-	          // We don't want to listen for drag and drop until this is clicked again
-	          container.removeEventListener('mousemove', dragHandler, false);
-	          draggable.removeEventListener('mouseup',   dropHandler, false);
-
-	          dragging = false;
-	      }
-	  }
-
-	  // Where all the fun happens
-	  draggable.addEventListener('mousedown', function dragListener(downEvent){
-	  	console.log("dragging!");
-	  	downEvent.preventDefault();
-
-	      // The drag event
-	      container.addEventListener('mousemove', dragHandler, false);
-
-	      // The end of drag, if dragging occurred
-	      draggable.addEventListener('mouseup',   dropHandler, false);
-	  }, false);
-	}
-
-
-
+document.querySelector('.setVolumeOne').addEventListener('click', function() {
+	soundSources[0].gainNode.gain.value = 0;
 });
+
+document.querySelector('.setVolumeTwo').addEventListener('click', function() {
+	soundSources[1].gainNode.gain.value = 0;
+});
+
+// drag handling: from http://jsfiddle.net/HtubL/57/ (doesn't work)
+
+var container  = $('.soundMap');   // The element dots can be dragged within
+var draggables = $('.dot'); // The dots
+
+
+// Loop through and pass to our super function
+for(var i = 0, l = draggables.length; i < l; ++i)
+    makeDraggable(draggables[i], container); 
+
+
+function makeDraggable(draggable, container){
+  // In case you don't want to have a container
+  var container = container || window;
+  // So we know what to do on mouseup:
+  // At this point we're not sure the user wants to drag
+  var dragging  = false;
+
+      // The movement listener and position modifier
+      function dragHandler(moveEvent){
+      	moveEvent.preventDefault();
+
+      	dragging        = true;
+
+          // Ascertain where the mouse is
+          var coordinates = [
+          moveEvent.clientX,
+          moveEvent.clientY
+          ];
+
+          // Style properties we need to apply to the element 
+          var styleValues = {
+          	position : 'absolute',
+          	left     : coordinates[0] + 'px',
+          	top      : coordinates[1] + 'px'
+          };
+
+          // Apply said styles
+          for(property in styleValues){
+          	if(styleValues.hasOwnProperty(property)){
+          		draggable.style[property] = styleValues[property];
+          	}
+          }
+      }
+
+      function dropHandler(upEvent){
+      // Only interfere if we've had a drag event
+      if(dragging === true){
+          // We don't want the button click event to fire!
+          upEvent.preventDefault();
+
+          // We don't want to listen for drag and drop until this is clicked again
+          container.removeEventListener('mousemove', dragHandler, false);
+          draggable.removeEventListener('mouseup',   dropHandler, false);
+
+          dragging = false;
+      }
+  }
+
+  // Where all the fun happens
+  draggable.addEventListener('mousedown', function dragListener(downEvent){
+  	console.log("dragging!");
+  	downEvent.preventDefault();
+
+      // The drag event
+      container.addEventListener('mousemove', dragHandler, false);
+
+      // The end of drag, if dragging occurred
+      draggable.addEventListener('mouseup',   dropHandler, false);
+  }, false);
+}
 
 
 

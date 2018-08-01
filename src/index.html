@@ -4,20 +4,21 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
   </head>
   <body>
-	
-	<div class="soundMap">
-		<div class="mover"></div>
-	</div>
-	<button class="getDistance">Get Distance!</button>
-	<button class="moveActor">Loading Sounds...</button>
-	<button class="play">Play Sound</button>
-	<button class="stop">Stop Sound</button>
-	<button class="setVolumeOne">Set Vol 1 to 0</button>
-	<button class="setVolumeTwo">Set Vol 2 to 0</button>
-	<div class="coordinates">Coordinates:</div>
-	<div class="results">Results:</div>
-    
+  	<div class="soundMap">
+      <div id="map"></div>
+  		<div class="mover"></div>
+  	</div>
+  	<button class="getDistance">Get Distance!</button>
+  	<button class="moveActor">Loading Sounds...</button>
+  	<button class="play">Play Sound</button>
+  	<button class="stop">Stop Sound</button>
+  	<button class="setVolumeOne">Set Vol 1 to 0</button>
+  	<button class="setVolumeTwo">Set Vol 2 to 0</button>
+  	<div class="coordinates">Coordinates:</div>
+  	<div class="results">Results:</div>
     <script src="javascripts/main.js"></script>
-
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCo5hCfcezrDipxunmvtGFzW76jhomz19Y&callback=initMap">
+    </script>
   </body>
 </html>

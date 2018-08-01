@@ -15,7 +15,10 @@ body {
 	width: 400px;
 	float: left;
 }
-
+#map {
+	height: 400px;
+	width: 400px;
+}
 
 .dot {
 	height:5px;
@@ -55,7 +58,9 @@ body {
 	width:5px;
 	border-radius: 5px;
 	background-color: blue;
-	position: relative;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 svg {
