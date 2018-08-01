@@ -3,7 +3,6 @@
 $(document).ready(function() {
 
 	// vars
-
 	var xPosition;
 	var yPosition;
 	var coordinates = [{x:0,y:0}];
@@ -421,11 +420,3 @@ function finishedLoading(bufferList) {
 
     init();
     */
-
-
-
-
-
-
-
-
