@@ -61,6 +61,10 @@ $(document).ready(function() {
 			);
 	}
 	
+	function clearDots() {
+		$('.soundMap div.dot').remove();
+	}
+	
 	// Add Soundsource dots to map
 
 	function addSoundSource(x,y) {
@@ -100,8 +104,11 @@ $(document).ready(function() {
 
 	// functions to display data
 
-	function printCoordinates(xPosition, yPosition) {
-		$('.coordinates').append($("<p>x = " + xPosition + ", y = " + yPosition + "</p>"));
+	function printCoordinates() {
+		$('.coordinates').empty();
+		coordinates.forEach(function(coordinate) {
+			$('.coordinates').append($("<p>x = " + coordinate.x + ", y = " + coordinate.y + "</p>"));
+		});
 	}
 
 	function printDistance(distance) {
@@ -156,7 +163,14 @@ $(document).ready(function() {
   				// control volume with distance
   				setVolume(distance, index);
   			}
-  		}
+			},
+			complete: function() {
+				// after finishing a run, reduce coordinates to only last point
+				coordinates = [coordinates[coordinates.length - 1]];
+				clearDots();
+				printCoordinates();
+				$('.moveActor').attr('disabled', null);
+			}
   	});
 	}
 
@@ -170,6 +184,7 @@ $(document).ready(function() {
 
 
 	$(".moveActor").on("click", function(e) {
+		$(this).attr('disabled', 'disabled');
 		// loop over coordinates array and move actor between dots
     // coordinates starts with an entry at 0,0
     for (index = 0; index < coordinates.length-1; index++) {
@@ -212,26 +227,24 @@ $(document).ready(function() {
 function finishedLoading(bufferList) {
 	console.log('finishedLoading');
 	$(".moveActor").html('Go!');
-	for (index = 0; index < soundSources.length; index++) {
+	for (var index = 0; index < soundSources.length; index++) {
 
 		var source = context.createBufferSource();
 		source.buffer = bufferList[index];
 
-			// connect gain node
+			// connect gain node between source and destination
 			var gainNode = context.createGain();
 			source.connect(gainNode);
 			gainNode.connect(context.destination);
-
-			//source.connect(context.destination); // JRL: commented this out so the gainNode was able to affect the sound
-			source.start(0);
+			// set initial volume
+			gainNode.gain.value = 0;
+			source.start();
 			
 	      // save the source and gainNode onto the sourceSource
 	      // to have separately controlable gain nodes for each sound
 	      soundSources[index].source = source;
 	      soundSources[index].gainNode = gainNode;
 
-      // start sounds at volume 0
-      gainNode.gain.value = 0;
   }
 }
 
