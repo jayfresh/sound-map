@@ -51,8 +51,17 @@ gulp.task('templates', function() {
     .pipe(livereload());
 });
 
+gulp.task('templatesBuild', function() {
+  gulp.src('./src/*.html')
+    .pipe(gulp.dest('./build'));
+});
+
 gulp.task('default', ['clean'], function() {
   gulp.start('styles', 'javascripts', 'images', 'fonts', 'templates');
+});
+
+gulp.task('build', ['clean'], function() {
+  gulp.start('styles', 'javascripts', 'images', 'fonts', 'templatesBuild');
 });
 
 gulp.task('watch', ['default', 'server'], function() {
